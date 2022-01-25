@@ -252,3 +252,14 @@ ButtonStyle btnStyle(bool isFilled, bool isText) {
     splashFactory: InkSplash.splashFactory,
   );
 }
+
+FloatingActionButtonThemeData fabTheme = FloatingActionButtonThemeData(
+    foregroundColor: Colors.white,
+    backgroundColor: colorPalette["black"]!,
+    splashColor: colorPalette["blackDark"]!,
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(24),
+    ),
+    extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
+    extendedTextStyle: textTheme.bodyText2!.copyWith(color: Colors.white));
