@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'themes.dart';
 
 void main(List<String> args) {
+  // ignore: prefer_const_constructors
   runApp(MyApp());
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.white),
-  );
 }
+
+List<Color> greenTheme = [
+  ColorPalette.greenLight,
+  ColorPalette.green,
+  ColorPalette.greenDark,
+  ColorPalette.greenDarker,
+];
+
+List<Color> orangeTheme = [
+  ColorPalette.orangeLight,
+  ColorPalette.orange,
+  ColorPalette.orangeDark,
+  ColorPalette.orangeDarker,
+];
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -15,13 +26,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        floatingActionButtonTheme: fabTheme,
-      ),
       debugShowCheckedModeBanner: false,
       routes: {
         "/": (context) => const HomePage(),
       },
+      initialRoute: "/",
     );
   }
 }
@@ -34,148 +43,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> tabText = ["Today", "Upcoming", "Completed"];
-  int selectedInd = 0;
-
-  List<Widget> totalTasks = [];
-
+  GlobalKey scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.white,
+        key: scaffoldKey,
         appBar: PreferredSize(
-          preferredSize: const Size(double.infinity, double.maxFinite),
-          child: DefaultAppBar(
-            hasRightItems: true,
-            leftItems: [
-              TextButton(
-                style: btnStyle(true, false),
-                child: const Icon(
-                  Icons.dashboard_outlined,
-                  size: 16.0,
-                ),
-                onPressed: () {},
-              ),
-            ],
-            title: "Your Tasks",
-            rightItems: [
-              TextButton(
-                style: btnStyle(false, false),
-                child: const Icon(
-                  Icons.notifications_outlined,
-                  size: 16.0,
-                ),
-                onPressed: () {},
-              ),
-            ],
+          preferredSize: Size.fromHeight(96),
+          child: DefAppBar(
+            leftAction: DefaultButton.withoutText(
+                icon: Icons.dashboard, onPressFn: () {}),
+            rightAction: DefaultButton.withoutText(
+              icon: Icons.notifications,
+              onPressFn: () {},
+              isFilled: false,
+            ),
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.add,
-            size: 12,
-          ),
-          label: Text(
-            "Add task",
-            style: textTheme.bodyText2!.copyWith(color: Colors.white),
-          ),
-        ),
-        body: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, top: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  //======Greetings and search========
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Welcome Back!",
-                        style: textTheme.bodyText1,
-                      ),
-                      Text(
-                        "Here's today's updates",
-                        style: textTheme.headline1,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(
-                    height: 16,
-                  ),
-
-                  //======Tabs===
-                  Flex(
-                    direction: Axis.horizontal,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      for (var t in tabText)
-                        Expanded(
-                          flex: 1,
-                          child: TextButton(
-                            onPressed: () {
-                              selectedInd = tabText.indexOf(t);
-                              setState(() {});
-                            },
-                            child: Text(t),
-                            style: btnStyle(
-                                    tabText.indexOf(t) == selectedInd, true)
-                                .copyWith(
-                              padding: MaterialStateProperty.all(
-                                const EdgeInsets.symmetric(
-                                  vertical: 2,
-                                ),
-                              ),
-                              textStyle: MaterialStateProperty.all(
-                                  textTheme.bodyText2),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return TaskCard(
-                          tags: const ["School", "Work"],
-                          title: "Taking my sister to school",
-                          date: "12 October 2021",
-                          time: "07 : 30",
-                          bgColor: colorPalette["cyan"]!,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+        backgroundColor: ColorPalette.white,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Hey Ishaan!",
+                style: textTheme.bodyText2,
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                height: 120,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white,
-                      Colors.white.withAlpha(0),
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
+              Text(
+                "Here are today's tasks",
+                style: textTheme.headline1,
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 24,
+              ),
+              TaskCard(
+                theme: greenTheme,
+                title: "Complete part 3 of post!",
+                subtitle: "Cover the remaining points",
+                tags: const ["Work", "Urgent"],
+              ),
+              TaskCard(
+                theme: orangeTheme,
+                title: "Complete part 3 of post!",
+              ),
+            ],
+          ),
         ),
       ),
     );
