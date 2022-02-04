@@ -1,24 +1,15 @@
 import 'package:flutter/material.dart';
-import 'themes.dart';
+import 'design_system/themes.dart';
+import 'design_system/components.dart';
+
+import 'new_task.dart';
 
 void main(List<String> args) {
   // ignore: prefer_const_constructors
   runApp(MyApp());
 }
 
-List<Color> greenTheme = [
-  ColorPalette.greenLight,
-  ColorPalette.green,
-  ColorPalette.greenDark,
-  ColorPalette.greenDarker,
-];
-
-List<Color> orangeTheme = [
-  ColorPalette.orangeLight,
-  ColorPalette.orange,
-  ColorPalette.orangeDark,
-  ColorPalette.orangeDarker,
-];
+List<TaskCard> total = [];
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -29,6 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         "/": (context) => const HomePage(),
+        "new": (context) => const NewTaskPage(),
       },
       initialRoute: "/",
     );
@@ -43,25 +35,49 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  GlobalKey scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        key: scaffoldKey,
+        resizeToAvoidBottomInset: false,
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(96),
+          preferredSize: const Size.fromHeight(96),
           child: DefAppBar(
-            leftAction: DefaultButton.withoutText(
-                icon: Icons.dashboard, onPressFn: () {}),
-            rightAction: DefaultButton.withoutText(
+            leftAction: DefaultButton(icon: Icons.dashboard, onPressFn: () {}),
+            rightAction: DefaultButton(
               icon: Icons.notifications,
               onPressFn: () {},
               isFilled: false,
             ),
           ),
         ),
-        backgroundColor: ColorPalette.white,
+        bottomSheet: Container(
+          height: 120,
+          decoration: BoxDecoration(
+              boxShadow: const [BoxShadow(color: Colors.transparent)],
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Colors.white, Colors.white.withOpacity(0)])),
+          child: Center(
+            child: DefaultButton(
+                title: "Add task",
+                icon: Icons.add_circle,
+                onPressFn: () {
+                  Navigator.pushNamed(context, "new").then((value) {
+                    var _result = value as List;
+                    var temp = TaskCard(
+                        title: _result[0],
+                        subtitle: _result[1],
+                        theme: _result[2]);
+
+                    setState(() {
+                      total.add(temp);
+                    });
+                  });
+                }),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
@@ -78,15 +94,12 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 24,
               ),
-              TaskCard(
-                theme: greenTheme,
-                title: "Complete part 3 of post!",
-                subtitle: "Cover the remaining points",
-                tags: const ["Work", "Urgent"],
-              ),
-              TaskCard(
-                theme: orangeTheme,
-                title: "Complete part 3 of post!",
+              Expanded(
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: total.length,
+                  itemBuilder: (context, index) => total[index],
+                ),
               ),
             ],
           ),
