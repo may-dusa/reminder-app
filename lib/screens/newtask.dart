@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'design_system/themes.dart';
-import 'design_system/components.dart';
-import 'design_system/component_themes.dart';
+import '../common/themes.dart';
+import '../common/components.dart';
 
 List<Color> colors = [
   ColorPalette.green,
@@ -25,6 +24,8 @@ class _NewTaskPageState extends State<NewTaskPage> {
   String date = '';
   String time = '';
   int _selectedInd = 0;
+
+  List<String> tags = ["Work", "Urgent"];
 
   final List<TextEditingController> _tec =
       List.generate(2, (index) => TextEditingController());
@@ -65,11 +66,20 @@ class _NewTaskPageState extends State<NewTaskPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          DefaultButton(
-                            title: 'Add tags',
-                            icon: Icons.add,
-                            onPressFn: () {},
-                            isFilled: false,
+                          Row(
+                            children: List.generate(tags.length + 1, (index) {
+                              if (index == tags.length) {
+                                return AddTagButton();
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: TagButton(
+                                    title: tags[index],
+                                    isRemovable: true,
+                                  ),
+                                );
+                              }
+                            }),
                           ),
                           const SizedBox(
                             height: 16,
@@ -216,6 +226,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
                     _tec[0].text,
                     _tec[1].text,
                     colors[_selectedInd],
+                    tags,
                   ]);
                 },
                 isExpanded: true,

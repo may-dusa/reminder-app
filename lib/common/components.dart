@@ -1,26 +1,7 @@
 // Components - Default Components
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'component_themes.dart';
 import 'themes.dart';
-
-Color darken(Color c, [int percent = 10]) {
-  assert(1 <= percent && percent <= 100);
-  var f = 1 - percent / 100;
-  return Color.fromARGB(c.alpha, (c.red * f).round(), (c.green * f).round(),
-      (c.blue * f).round());
-}
-
-/// Lighten a color by [percent] amount (100 = white)
-// ........................................................
-Color lighten(Color c, [int percent = 10]) {
-  assert(1 <= percent && percent <= 100);
-  var p = percent / 100;
-  return Color.fromARGB(
-      c.alpha,
-      c.red + ((255 - c.red) * p).round(),
-      c.green + ((255 - c.green) * p).round(),
-      c.blue + ((255 - c.blue) * p).round());
-}
 // Buttons
 
 class DefaultButton extends TextButton {
@@ -110,7 +91,9 @@ class DefAppBar extends StatelessWidget {
   }
 }
 
-// Cards
+// =============================================================================
+// COMPONENTS
+// =============================================================================
 
 class TaskCard extends StatelessWidget {
   TaskCard({
@@ -207,17 +190,12 @@ class TaskCard extends StatelessWidget {
       children: [
         for (var t in tags!)
           Container(
-            decoration: BoxDecoration(
-                color: lighten(theme, 20),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: darken(theme, 50), width: 1)),
-            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 11),
-            margin: const EdgeInsets.only(bottom: 16, right: 8),
-            child: Text(
-              t,
-              style: textTheme.bodyText1!.copyWith(color: darken(theme, 50)),
+            padding: const EdgeInsets.only(right: 8, bottom: 16),
+            child: TagButton(
+              title: t,
+              color: theme,
             ),
-          ),
+          )
       ],
     );
   }
@@ -300,4 +278,91 @@ class DateField extends GestureDetector {
     return DateField(
         icon: Icons.watch_later, hintText: "HH : MM A/P", onPressFn: onPressFn);
   }
+}
+
+class TagButton extends DottedBorder {
+  TagButton({
+    Key? key,
+    required String title,
+    Color color = ColorPalette.grayLighter,
+    bool isRemovable = false,
+    String? emoji,
+  }) : super(
+          color: darken(color, 50),
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(8),
+          padding: EdgeInsets.zero,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: tagDecor(color: color).copyWith(
+                border: Border.all(width: 1, color: Colors.transparent)),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (emoji != null)
+                  Text(
+                    emoji,
+                    style: textTheme.bodyText1,
+                  ),
+                if (emoji != null)
+                  const SizedBox(
+                    width: 8,
+                  ),
+                Text(
+                  title,
+                  style:
+                      textTheme.bodyText1!.copyWith(color: darken(color, 50)),
+                ),
+                if (isRemovable)
+                  const SizedBox(
+                    width: 8,
+                  ),
+                if (isRemovable)
+                  GestureDetector(
+                    child: const Icon(
+                      Icons.close,
+                      size: 12,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+}
+
+class AddTagButton extends GestureDetector {
+  AddTagButton({
+    Key? key,
+    String title = "Add tag",
+    Color color = ColorPalette.grayLight,
+  }) : super(
+          child: DottedBorder(
+            color: darken(color, 50),
+            borderType: BorderType.RRect,
+            radius: const Radius.circular(8),
+            padding: EdgeInsets.zero,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: tagDecor(color: color).copyWith(
+                  border: Border.all(width: 1, color: Colors.transparent)),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.add,
+                    size: 12,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    title,
+                    style:
+                        textTheme.bodyText1!.copyWith(color: darken(color, 50)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
 }
